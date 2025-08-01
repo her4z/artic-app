@@ -16,10 +16,7 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSUserTrackingUsageDescription": "Esta app usa notificaciones para alertas dentro de la aplicación.",
-        "UIBackgroundModes": [
-          "remote-notification",
-          "remote-notification"
-        ],
+        "UIBackgroundModes": ["remote-notification"],
         "ITSAppUsesNonExemptEncryption": false
       },
       "bundleIdentifier": "com.articapp"
@@ -36,9 +33,7 @@
       "favicon": "./assets/images/favicon.png",
       "bundler": "metro"
     },
-    "plugins": [
-      "expo-font"
-    ],
+    "plugins": ["expo-font"],
     "extra": {
       "eas": {
         "projectId": "321b9149-a6af-4185-be9b-e8543297b313"
