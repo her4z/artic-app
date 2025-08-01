@@ -1,5 +1,7 @@
 # artic-app
 Art Institute of Chicago Mobile App
+https://www.artic.edu/
+
 
 ### ✨ Features
 - Artwork discovery from Art Institute of Chicago
@@ -18,4 +20,4 @@ Art Institute of Chicago Mobile App
 - TypeScript
 - NativeWind (Tailwind CSS)
 - React Navigation
-- Art Institute of Chicago API
+- Art Institute of Chicago API (https://www.artic.edu/open-access/public-api)
