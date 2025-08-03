@@ -1,7 +1,7 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { View, Pressable } from 'react-native';
+import { View, Pressable, TouchableOpacity } from 'react-native';
 import { useMemo } from 'react';
 import ThemeSwitch from './ThemeSwitch';
 import { Ionicons } from '@expo/vector-icons';
@@ -39,7 +39,9 @@ export const Header = () => {
 
         <View className="flex-1" />
 
-        <ArticLogo height={72} width={72} color={themeStyles.logoColor} />
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <ArticLogo height={72} width={72} color={themeStyles.logoColor} />
+        </TouchableOpacity>
 
         <View className="flex-1" />
 
