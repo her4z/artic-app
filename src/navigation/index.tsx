@@ -19,13 +19,24 @@ const Navigation = () => {
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
-          animation: 'slide_from_right',
           gestureEnabled: true,
         }}
       >
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Bookmarks" component={BookmarksScreen} />
-        <Stack.Screen name="ArtworkDetail" component={ArtworkDetailScreen} />
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ animation: 'slide_from_left' }}
+        />
+        <Stack.Screen
+          name="Bookmarks"
+          component={BookmarksScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="ArtworkDetail"
+          component={ArtworkDetailScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

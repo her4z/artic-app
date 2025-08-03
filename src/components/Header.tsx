@@ -2,7 +2,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { View, Pressable, TouchableOpacity } from 'react-native';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import ThemeSwitch from './ThemeSwitch';
 import { Ionicons } from '@expo/vector-icons';
 import ArticLogo from '../../assets/images/artic-logo.svg';
@@ -11,7 +11,7 @@ import { useUserPreferences } from '../hooks/useUserPreferences';
 export const Header = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute();
-  const { effectiveTheme } = useUserPreferences();
+  const { effectiveTheme, triggerScrollToTop } = useUserPreferences();
 
   const isBookmarks = route.name === 'Bookmarks';
   const isDark = effectiveTheme === 'dark';
@@ -26,9 +26,18 @@ export const Header = () => {
     [isDark],
   );
 
-  const handleBookmarksPress = () => {
+  const handleBookmarksPress = useCallback(() => {
     navigation.navigate('Bookmarks');
-  };
+  }, [navigation]);
+
+  const handleHomePress = useCallback(() => {
+    if (route.name === 'Home') {
+      // Trigger scroll to top via context
+      triggerScrollToTop();
+    } else {
+      navigation.navigate('Home');
+    }
+  }, [navigation, route.name, triggerScrollToTop]);
 
   return (
     <View className={`flex-row w-full items-center border-b ${themeStyles.container}`}>
@@ -39,7 +48,7 @@ export const Header = () => {
 
         <View className="flex-1" />
 
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+        <TouchableOpacity onPress={handleHomePress}>
           <ArticLogo height={72} width={72} color={themeStyles.logoColor} />
         </TouchableOpacity>
 

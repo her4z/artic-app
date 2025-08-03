@@ -4,10 +4,10 @@ import { useUserPreferences } from '../hooks/useUserPreferences';
 import { Ionicons } from '@expo/vector-icons';
 
 const ThemeSwitch = () => {
-  const { theme, setTheme } = useUserPreferences();
-  const slideAnim = useRef(new Animated.Value(theme === 'dark' ? 1 : 0)).current;
+  const { theme, effectiveTheme, setTheme } = useUserPreferences();
+  const slideAnim = useRef(new Animated.Value(effectiveTheme === 'dark' ? 1 : 0)).current;
 
-  const isDark = theme === 'dark';
+  const isDark = effectiveTheme === 'dark';
 
   // Memoize theme-dependent styles
   const themeStyles = useMemo(
@@ -32,7 +32,13 @@ const ThemeSwitch = () => {
   }, [isDark, slideAnim]);
 
   const handleToggle = () => {
-    setTheme(isDark ? 'light' : 'dark');
+    // If current theme is 'system', set to the opposite of current effective theme
+    if (theme === 'system') {
+      setTheme(effectiveTheme === 'dark' ? 'light' : 'dark');
+    } else {
+      // If user has already set a specific theme, toggle between light and dark
+      setTheme(theme === 'dark' ? 'light' : 'dark');
+    }
   };
 
   return (

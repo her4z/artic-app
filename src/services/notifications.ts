@@ -1,5 +1,4 @@
 import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-device';
 import { Platform, Alert, Linking } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -23,7 +22,7 @@ export type NotificationType =
 export interface NotificationContent {
   title: string;
   body: string;
-  data?: Record<string, any>;
+  data?: Record<string, string | number | boolean>;
   type?: NotificationType;
 }
 
@@ -48,14 +47,7 @@ export const configureNotifications = async (): Promise<boolean> => {
     );
 
     if (alreadyAskedForPermission === 'true') {
-      console.log('[Notifications] Permission already requested');
       return await checkNotificationPermission();
-    }
-
-    // Only proceed on physical devices
-    if (!Device.isDevice) {
-      console.log('[Notifications] Not available on emulators');
-      return false;
     }
 
     // Configure Android notification channel
@@ -176,28 +168,54 @@ export const sendNotification = async (
 };
 
 /**
- * Send artwork discovery notification
+ * Schedule daily notification at 12 PM with today's artwork recommendation
  */
-export const sendArtworkDiscoveryNotification = async (
-  artworkTitle: string,
-): Promise<string | null> => {
-  return sendNotification({
-    title: 'New Artwork Discovered!',
-    body: `Check out "${artworkTitle}" in our collection.`,
-    type: 'artwork_discovery',
-    data: { artworkTitle },
-  });
+export const scheduleDailyNotification = async (): Promise<void> => {
+  try {
+    const hasPermission = await checkNotificationPermission();
+    if (!hasPermission) {
+      console.warn('[Notifications] Permission not granted for daily notifications');
+      return;
+    }
+
+    if (await isDailyNotificationScheduled()) {
+      return;
+    }
+
+    const notificationId = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Daily Art Inspiration 🎨',
+        body: "Discover today's artwork recommendation",
+        data: { type: 'daily_reminder' },
+        sound: NOTIFICATION_CONFIG.DEFAULT_SOUND,
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DAILY,
+        hour: 12, // 12 PM
+        minute: 0,
+      },
+      identifier: 'daily-reminder',
+    });
+
+    console.log('[Notifications] Scheduled daily notification:', notificationId);
+  } catch (error) {
+    console.error('[Notifications] Failed to schedule daily notification:', error);
+  }
 };
 
 /**
- * Send bookmark reminder notification
+ * Check if daily notification is scheduled
  */
-export const sendBookmarkReminderNotification = async (): Promise<string | null> => {
-  return sendNotification({
-    title: 'Your Art Collection',
-    body: "Don't forget to explore your bookmarked artworks!",
-    type: 'bookmark_reminder',
-  });
+export const isDailyNotificationScheduled = async (): Promise<boolean> => {
+  try {
+    const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
+    return scheduledNotifications.some(
+      (notification) => notification.identifier === 'daily-reminder',
+    );
+  } catch (error) {
+    console.error('[Notifications] Failed to check scheduled notifications:', error);
+    return false;
+  }
 };
 
 /**

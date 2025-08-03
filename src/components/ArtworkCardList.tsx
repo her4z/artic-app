@@ -1,5 +1,5 @@
 import { getArtworks } from '../api/artworks';
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { View, FlatList, ActivityIndicator, RefreshControl, Text } from 'react-native';
 import ArtworkCard from './ArtworkCard';
 import { Artwork } from '../types/artwork';
@@ -16,15 +16,23 @@ const ArtworkCardList = ({
   artworks: propArtworks,
   isBookmarks = false,
 }: ArtworkCardListProps) => {
-  const { effectiveTheme } = useUserPreferences();
+  const { effectiveTheme, shouldScrollToTop } = useUserPreferences();
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const flatListRef = useRef<FlatList>(null);
 
   const isDark = effectiveTheme === 'dark';
+
+  // Listen to scroll to top trigger from context
+  useEffect(() => {
+    if (shouldScrollToTop && !isBookmarks) {
+      flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    }
+  }, [shouldScrollToTop, isBookmarks]);
 
   // If artworks are provided as props (for bookmarks), use them directly
   const displayArtworks = useMemo(
@@ -166,6 +174,7 @@ const ArtworkCardList = ({
 
   return (
     <FlatList<Artwork>
+      ref={flatListRef}
       data={displayArtworks}
       renderItem={renderItem}
       keyExtractor={keyExtractor}

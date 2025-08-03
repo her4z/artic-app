@@ -18,6 +18,8 @@ interface UserPreferencesContextType {
   setBookmarkedArtworks: (artworks: Artwork[]) => void;
   addBookmarkedArtwork: (artwork: Artwork) => void;
   removeBookmarkedArtwork: (artwork: Artwork) => void;
+  triggerScrollToTop: () => void;
+  shouldScrollToTop: boolean;
 }
 
 const STORAGE_KEYS = {
@@ -32,11 +34,13 @@ export const UserPreferencesContext = createContext<UserPreferencesContextType>(
   enableNotifications: false,
   bookmarkedArtworks: [],
   isLoading: true,
-  setTheme: () => {},
-  setEnableNotifications: () => {},
-  setBookmarkedArtworks: () => {},
-  addBookmarkedArtwork: () => {},
-  removeBookmarkedArtwork: () => {},
+  setTheme: () => undefined,
+  setEnableNotifications: () => undefined,
+  setBookmarkedArtworks: () => undefined,
+  addBookmarkedArtwork: () => undefined,
+  removeBookmarkedArtwork: () => undefined,
+  triggerScrollToTop: () => undefined,
+  shouldScrollToTop: false,
 });
 
 export const UserPreferencesProvider = ({ children }: { children: ReactNode }) => {
@@ -44,6 +48,7 @@ export const UserPreferencesProvider = ({ children }: { children: ReactNode }) =
   const [enableNotifications, setEnableNotifications] = useState(false);
   const [bookmarkedArtworks, setBookmarkedArtworks] = useState<Artwork[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [shouldScrollToTop, setShouldScrollToTop] = useState(false);
 
   const deviceTheme = useColorScheme();
 
@@ -133,6 +138,22 @@ export const UserPreferencesProvider = ({ children }: { children: ReactNode }) =
     setBookmarkedArtworks((prev) => prev.filter((item) => item.id !== artwork.id));
   }, []);
 
+  const triggerScrollToTop = useCallback(() => {
+    setShouldScrollToTop(true);
+  }, []);
+
+  // Reset scroll trigger after it's been used
+  useEffect(() => {
+    if (shouldScrollToTop) {
+      // Reset the flag after a short delay to allow the scroll to complete
+      const timer = setTimeout(() => {
+        setShouldScrollToTop(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [shouldScrollToTop]);
+
   const contextValue = useMemo(
     () => ({
       theme,
@@ -145,6 +166,8 @@ export const UserPreferencesProvider = ({ children }: { children: ReactNode }) =
       setBookmarkedArtworks,
       addBookmarkedArtwork,
       removeBookmarkedArtwork,
+      triggerScrollToTop,
+      shouldScrollToTop,
     }),
     [
       theme,
@@ -157,6 +180,8 @@ export const UserPreferencesProvider = ({ children }: { children: ReactNode }) =
       setBookmarkedArtworks,
       addBookmarkedArtwork,
       removeBookmarkedArtwork,
+      triggerScrollToTop,
+      shouldScrollToTop,
     ],
   );
 

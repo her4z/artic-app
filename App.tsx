@@ -3,7 +3,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { UserPreferencesProvider } from './src/context/UserPreferencesContext';
 import { useEffect } from 'react';
 import { useFonts } from 'expo-font';
-import { configureNotifications } from './src/services/notifications';
+import { configureNotifications, scheduleDailyNotification } from './src/services/notifications';
 import Navigation from './src/navigation';
 import StatusBar from './src/components/StatusBar';
 import { View, Text } from 'react-native';
@@ -27,11 +27,13 @@ export default function App() {
     'PlayfairDisplay-Italic': require('./assets/fonts/PlayfairDisplay-Italic-VariableFont_wght.ttf'),
   });
 
-  // Configure notifications on app start
+  // Configure notifications and daily notifications on app start
   useEffect(() => {
     const setupNotifications = async () => {
       try {
         await configureNotifications();
+        // Schedule daily notification if permissions are granted
+        await scheduleDailyNotification();
       } catch (error) {
         console.warn('Failed to configure notifications:', error);
       }
