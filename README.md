@@ -2,6 +2,8 @@
 Art Institute of Chicago Mobile App
 https://www.artic.edu/
 
+https://vimeo.com/1115320405?share=copy
+
 
 ### ✨ Features
 - Artwork discovery from Art Institute of Chicago
